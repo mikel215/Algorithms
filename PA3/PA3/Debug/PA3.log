@@ -1,5 +1,1 @@
-﻿  main.cpp
-c:\users\mik\documents\cs\cs212\pa3\pa3\main.cpp(1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\mik\documents\cs\cs212\pa3\pa3\csvparser.h(174): warning C4018: '<=': signed/unsigned mismatch
-c:\users\mik\documents\cs\cs212\pa3\pa3\main.cpp(32): warning C4244: 'argument': conversion from 'double' to 'const int', possible loss of data
-  PA3.vcxproj -> C:\Users\Mik\Documents\CS\CS212\PA3\Debug\PA3.exe
+﻿  PA3.vcxproj -> C:\Users\Mik\Documents\CS\CS212\Algorithms\PA3\Debug\PA3.exe

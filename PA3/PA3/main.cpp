@@ -1,5 +1,6 @@
 #include "CityGraph.h";
 #include "CsvParser.h"
+#include<iostream>	
 
 void buildMST(CityGraph& graph, vector<vector<string>> dat)
 {
@@ -46,6 +47,7 @@ vector<string> getDestinations(string filename)
 		{
 			string line;
 			getline(file, line);
+			transform(line.begin(), line.end(), line.begin(), tolower);
 			d.push_back(line);
 		}
 	}
@@ -54,8 +56,19 @@ vector<string> getDestinations(string filename)
 
 }
 
+int getTotalTime(vector<Edge> mst)
+{
+	int i = 0;
+	for (auto edge : mst)
+	{
+		i += edge.weight;
+	}
+	return i;
+}
+
 int main(void)
 {
+	cout << "***Route Planner***" << endl;
 	//Example of how to parse a CSV file for graph building
 	CsvStateMachine csm{ "map1.txt" };
 	vector<vector<string>> data = csm.processFile();
@@ -67,6 +80,8 @@ int main(void)
 
 	// compute mst from starting vertex
 	vector<Edge> mst = graph.computeMinimumSpanningTree(deliveries[0]);
+
+	cout << "Total transit time: " << getTotalTime(mst) << " minutes" << endl;
 
 
 	/*
