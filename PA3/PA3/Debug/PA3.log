@@ -2,6 +2,7 @@
 c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\csvparser.h(174): warning C4018: '<=': signed/unsigned mismatch
 c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(33): warning C4244: 'argument': conversion from 'double' to 'const int', possible loss of data
-c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(82): warning C4018: '<': signed/unsigned mismatch
-c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(85): warning C4018: '>=': signed/unsigned mismatch
+c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(72): warning C4018: '<': signed/unsigned mismatch
+c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(75): warning C4018: '>=': signed/unsigned mismatch
+c:\users\mik\documents\cs\cs212\algorithms\pa3\pa3\main.cpp(130): warning C4018: '<': signed/unsigned mismatch
   PA3.vcxproj -> C:\Users\Mik\Documents\CS\CS212\Algorithms\PA3\Debug\PA3.exe

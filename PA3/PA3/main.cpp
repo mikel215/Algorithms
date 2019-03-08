@@ -92,7 +92,7 @@ vector<Edge> computeMostEfficientRoute(CityGraph graph, vector<string> destinati
 
 }
 
-void getRouteTime(vector<Edge> mst)
+void getRouteTime(vector<Edge> mst, string origin)
 {
 	int i = 0;
 	for (auto edge : mst)
@@ -101,6 +101,47 @@ void getRouteTime(vector<Edge> mst)
 	}
 
 	cout << "Total transit time: " << i << " minutes" << endl;
+	cout << "Route:" << endl;
+
+	vector<string> route{};
+	for (auto i : mst)
+	{
+		// if origin exists in vector
+		if (std::find(route.begin(), route.end(), origin) != route.end())
+		{
+			if (i.source->getKey() == origin)
+			{
+				route.push_back(i.sink->getKey());
+			}
+			else
+			{
+				route.push_back(i.source->getKey());
+			}
+		}
+		else
+		{
+			if (i.source->getKey() == origin)
+			{
+				route.push_back(i.sink->getKey());
+			}
+			route.push_back(i.source->getKey());
+		}
+	}
+	for (int i = 0; i < route.size(); i++)
+	{
+		if (route[i] == route.back())
+		{
+			break;
+		}
+
+		string start = route[i];
+		string next = route[i + 1];
+
+		transform(start.begin(), start.end(), start.begin(), toupper);
+		transform(next.begin(), next.end(), next.begin(), toupper);
+		cout << start << " -> " << next << endl;
+	}
+
 }
 
 int main(void)
@@ -118,7 +159,7 @@ int main(void)
 	// compute mst from starting vertex
 	vector<Edge> mst = computeMostEfficientRoute(graph, deliveries);
 
-	getRouteTime(mst);
+	getRouteTime(mst, deliveries[0]);
 
 
 
