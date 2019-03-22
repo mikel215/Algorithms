@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include<string>
+#include<queue>
 #include <unordered_map>
 #include <cmath>
 #include <string>
@@ -175,7 +176,30 @@ TreeNode* buildTreeFromFile()
 void writeTreeToFile(TreeNode* root)
 {
 	ofstream file{ "tree_file.txt" };
-	
+	queue<pair<string, TreeNode*>> nodes{};
+	// base case
+	file << "NULL" << "," <<root->value << "," << root->children.size() << endl;
+
+	for (auto i : root->children)
+	{
+		nodes.push(make_pair(i.first, i.second));
+	}
+
+	while (nodes.empty() == false)
+	{
+		pair<string, TreeNode*> current = nodes.front();
+		nodes.pop();
+		
+		// add children nodes to queue
+		for (auto i : current.second->children)
+		{
+			nodes.push(make_pair(i.first, i.second));
+		}
+
+		file << current.first << "," << current.second->value << "," <<
+			current.second->children.size() << endl;
+	}
+	file.close();
 
 
 }
@@ -197,16 +221,21 @@ void mainAppPrompt(int& opt)
 int main(void)
 {
 	// initialize all possible variables
-	int decision = 0;
+	int decision = 2;
 	TreeNode* root = nullptr;
 
-	mainAppPrompt(decision);
+	//mainAppPrompt(decision);
 
+	root = buildTreeFromFile();
 	switch(decision)
 	{
 	case 1:
 		root = buildTreeFromFile();
+	case 2:
+		writeTreeToFile(root);
 		
 	}
+
+	return 0;
 
 }
