@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include<string>
 #include<queue>
@@ -158,9 +159,9 @@ TreeNode* buildTree(
    return node;
 }
 
-TreeNode* buildTreeFromFile()
+TreeNode* buildTreeFromFile(string filename, string outcome_variable)
 {
-   CsvStateMachine parser{ "easy data set.csv" };
+   CsvStateMachine parser{ filename };
    vector<vector<string>> data = parser.processFile();
    vector<string> header = data[0];
 
@@ -168,13 +169,30 @@ TreeNode* buildTreeFromFile()
    //array elements 1...size() to another structure
    data.erase(data.begin());
 
-   TreeNode* root = buildTree(data, header, 4);
+   TreeNode* root = buildTree(data, header, stoi(outcome_variable));
    return root;
 	
 }
 
+int heightTree(TreeNode* root)
+{
+	if (root->children.empty() == true)
+	{
+		return 0;
+	}
+
+	int h = 0;
+	for (auto i : root->children)
+	{
+		h = heightTree(i.second);
+	}
+
+	return 1 + h;
+}
+
 void writeTreeToFile(TreeNode* root)
 {
+	int height = heightTree(root);
 	ofstream file{ "tree_file.txt" };
 	queue<pair<string, TreeNode*>> nodes{};
 	// base case
@@ -199,10 +217,171 @@ void writeTreeToFile(TreeNode* root)
 		file << current.first << "," << current.second->value << "," <<
 			current.second->children.size() << endl;
 	}
+
+	file << height;
+
+
 	file.close();
 
 
 }
+
+// [0] : edge value
+// [1] : node value
+// [2] : number of children
+vector<string> parse(string in)
+{
+	stringstream ss(in);
+	string i;
+	vector<string> s{};
+	while (getline(ss, i, ','))
+	{
+		s.push_back(i);
+	}
+	return s;
+}
+
+int getNumNodes(int height, int k)
+{
+	int top = (pow(k, (height + 1)) - 1);
+	int bottom = k - 1;
+
+	return top / bottom;
+}
+
+void balance(vector<string>& tree, vector<string> orig, queue<int> q)
+{
+	while (q.empty() == false)
+	{
+		int front = q.front();
+		q.pop();
+
+		tree[front] = "NULL";
+	}
+	
+	queue<string> tmp{};
+	for (auto i : orig)
+	{
+		tmp.push(i);
+	}
+
+	for (int i = 0; i < tree.size(); i++)
+	{
+		if (tree[i] == "NULL")
+		{
+			continue;
+		}
+		tree[i] = tmp.front();
+		tmp.pop();
+	}
+	return;
+}
+
+vector<string> serializeNaryTree(vector<string> tree, int k, int height)
+{
+	int total_nodes = getNumNodes(height, k);
+	vector<string> final_tree(total_nodes);
+	queue<int> stuff{};
+	for (int i = 0; i < tree.size(); i++)
+	{
+		int num_children = stoi(parse(tree[i])[2]);
+		if (num_children == k)
+		{
+			continue;
+		}
+		if (num_children < k)
+		{
+			for (int j = k; j > num_children - 1 ; j--)
+			{
+				if (j == num_children) break;
+				int new_index = k * i + j;
+				stuff.push(new_index);
+
+			}
+			int end = stuff.size() + tree.size();
+			if (end == total_nodes + 1)
+			{
+				break;
+			}
+		}
+
+	}
+	balance(final_tree, tree, stuff);
+
+	return final_tree;
+}
+
+// recursive function that builds N-ary tree
+void buildTreeHelper(TreeNode* node, vector<string> tree, int k_value, int index, int leaf_children)
+{
+	vector<string> s{};
+
+	// return once we reach leaf node
+	if (leaf_children == 0)
+	{
+		return;
+	}
+
+	// i = the nth child node
+	unordered_map<string, TreeNode*> children_map{};
+	for (int i = 1; i < leaf_children + 1; i++)
+	{
+		// get index of child node
+		int child_index = (k_value * index) + i;
+
+		// get data of child node from tree vector
+		vector<string> data = parse(tree[child_index]);
+
+		// make child node
+		TreeNode* child = new TreeNode{};
+		child->value = data[1];
+		// recursively build this nodes child nodes
+		buildTreeHelper(child, tree, k_value, child_index, stoi(data[2]));
+
+		// insert node(after building its child nodes) into current nodes child_map
+		children_map.insert(make_pair(data[0], child));
+	}
+	node->children = children_map;
+	return;
+}
+
+
+TreeNode* readTreeFromFile()
+{
+	// read tree file
+	ifstream file{ "tree_file.txt" };
+
+	// read file into temp vector
+	vector<string> tree_lines{};
+	if (file.is_open() == true)
+	{
+		while (file.good() == true)
+		{
+			string line = "";
+			getline(file, line);
+			tree_lines.push_back(line);
+		}
+	}
+
+
+	//last element is tree height
+	int height = stoi(tree_lines[tree_lines.size() - 1]);
+
+	vector<string> root_data = parse(tree_lines[0]);
+	int root_children = stoi(root_data[2]);
+
+	// turn temp vector into completed N-ary tree
+	vector<string> tree = serializeNaryTree(tree_lines, root_children, height);
+
+
+
+	//build tree from vector, start with root 
+	TreeNode* root = new TreeNode{};
+	root->value = root_data[1];
+	buildTreeHelper(root, tree, root_children, 0, root_children);
+	return root;
+}
+
 
 void mainAppPrompt(int& opt)
 {
@@ -221,18 +400,27 @@ void mainAppPrompt(int& opt)
 int main(void)
 {
 	// initialize all possible variables
-	int decision = 2;
+	int decision = 3;
 	TreeNode* root = nullptr;
+	string outcome = "";
 
 	//mainAppPrompt(decision);
 
-	root = buildTreeFromFile();
+	root = buildTreeFromFile("easy data set.csv", "4");
+	string filename = "";
 	switch(decision)
 	{
 	case 1:
-		root = buildTreeFromFile();
+		cout << "Enter name of CSV to parse into tree:";
+		getline(cin, filename);
+		cout << "Enter the column number to use as outcome variable:";
+		getline(cin, outcome);
+
+		root = buildTreeFromFile(filename, outcome);
 	case 2:
 		writeTreeToFile(root);
+	case 3:
+		root = readTreeFromFile();
 		
 	}
 
